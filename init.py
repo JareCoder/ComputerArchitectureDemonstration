@@ -41,9 +41,11 @@ if schedulerFork == 0:
         time.sleep(0.1)
 
     data = sharedMemory.read(1024).decode('utf-8')
-    print("Data from shared memory: ", data.sort())
+    dataList = data.split(",")
+    dataList.sort()
+    print("\nSorted list from shared memory: ", dataList)
 
-    print("Detaching and removing shared memory...")
+    print("\nDetaching and removing shared memory...")
     sharedMemory.detach()
     sysv_ipc.SharedMemory(key).remove()
     os._exit(0)
