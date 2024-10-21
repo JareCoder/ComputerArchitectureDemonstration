@@ -41,7 +41,7 @@ if schedulerFork == 0:
         time.sleep(0.1)
 
     data = sharedMemory.read(1024).decode('utf-8')
-    print("Data from shared memory: ", data)
+    print("Data from shared memory: ", data.sort())
 
     print("Detaching and removing shared memory...")
     sharedMemory.detach()
