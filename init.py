@@ -10,7 +10,7 @@ schedulerPipeRead, schedulerPipeWrite = os.pipe()
 
 schedulerFork = os.fork()
 if schedulerFork == 0:
-    print("Scheduler process started!!!")
+    print("Scheduler process started!")
 
     key = 1234
 
@@ -97,6 +97,8 @@ for i in range(processes):
         schedulerList.append(pipeData)
         readFrom.close()
 
+print("Random scheduling times from children: ", schedulerList)
+
 print("Trying to attach to shared memory and write list...")
 try:
     sharedMemoryRefInInit = sysv_ipc.SharedMemory(key)
@@ -108,5 +110,3 @@ except Exception as e:
         
 print("Init process done! Waiting for scheduler to finish...")
 os.waitpid(schedulerFork, 0)
-
-# print("Scheduler list: ", schedulerList)
