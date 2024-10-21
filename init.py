@@ -20,7 +20,7 @@ if schedulerFork == 0:
     # Write to init pipe
     os.close(schedulerPipeRead)
     writeTo = os.fdopen(schedulerPipeWrite, 'w')
-    writeTo.write(int(key)) # Has to be a number to use
+    writeTo.write(str(key))
     writeTo.close()
 
     # Wait until something is written into shared memory
@@ -37,7 +37,7 @@ else:
     # Read from scheduler to know where to write
     os.close(schedulerPipeWrite)
     readFromScheduler = os.fdopen(schedulerPipeRead)
-    key = readFromScheduler.read().strip()
+    key = int(readFromScheduler.read().strip()) # Has to be a number to use as key
     readFromScheduler.close()
     print("Key: ", key)
 
@@ -76,4 +76,4 @@ except Exception as e:
     print("Error attaching shared memory and writing: " + str(e))
         
 
-print("Scheduler list: ", schedulerList)
+# print("Scheduler list: ", schedulerList)
