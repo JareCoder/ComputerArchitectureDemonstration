@@ -96,5 +96,7 @@ try:
 except Exception as e:
     print("Error attaching shared memory and writing: " + str(e))
         
+print("Init process done! Waiting for scheduler to finish...")
+os.waitpid(schedulerFork, 0)
 
 # print("Scheduler list: ", schedulerList)
