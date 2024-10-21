@@ -37,8 +37,13 @@ else:
     # Read from scheduler to know where to write
     os.close(schedulerPipeWrite)
     readFromScheduler = os.fdopen(schedulerPipeRead)
-    key = int(readFromScheduler.read().strip()) # Has to be a number to use as key
+    key_str = readFromScheduler.read().strip()
+    if key_str == "":
+        print("Key is empty! Aborting...")
+        exit(1)
+    key = int(key_str)
     readFromScheduler.close()
+    
     print("Key: ", key)
 
 # Init
