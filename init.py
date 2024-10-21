@@ -36,12 +36,13 @@ if schedulerFork == 0:
     while True: # Funny loop to check first byte of shared memory
         flag = sharedMemory.read(1)
         if flag and flag[0] == 1:
+            print("Shared memory written to!")
             break
 
-    print("Shared memory written to!")
-    data = sharedMemory.read().decode('utf-8')
+    data = sharedMemory.read(1024).decode('utf-8')
     print("Data from shared memory: ", data)
 
+    print("Detaching and removing shared memory...")
     sharedMemory.detach()
     sysv_ipc.SharedMemory(key).remove()
     os._exit(0)
