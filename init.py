@@ -9,7 +9,7 @@ print("Init process started. Forking scheduler process...")
 schedulerPipeRead, schedulerPipeWrite = os.pipe()
 
 schedulerFork = os.fork()
-if schedulerFork == 0: # Why does execl not work? Why do we need to fork and do if else?
+if schedulerFork == 0:
     print("Scheduler process started!!!")
 
     key = 1234
@@ -23,12 +23,22 @@ if schedulerFork == 0: # Why does execl not work? Why do we need to fork and do 
     writeTo.write(str(key))
     writeTo.close()
 
+    # Wait until something is written into shared memory
+    sharedMemory.attach()
+    print("Waiting for shared memory to be written to...")
+    while sharedMemory.read() == "": pass
+    print("Shared memory written to!")
+    data = sharedMemory.read().decode('utf-8')
+    print("Data from shared memory: ", data)
+
     sharedMemory.detach()
     sysv_ipc.SharedMemory(key).remove()
 else:
+    # Read from scheduler to know where to write
     os.close(schedulerPipeWrite)
     readFromScheduler = os.fdopen(schedulerPipeRead)
     key = readFromScheduler.read().strip()
+    readFromScheduler.close()
     print("Key: ", key)
 
 # Init
@@ -41,6 +51,7 @@ for i in range(processes):
 
     forkPid = os.fork()
     if forkPid == 0:
+        # Am child :3
         os.close(pipeRead)
 
         writeTo = os.fdopen(pipeWrite, 'w')
@@ -49,11 +60,20 @@ for i in range(processes):
         os._exit(0)
 
     else:
+        # Read from children
         os.close(pipeWrite)
         readFrom = os.fdopen(pipeRead)
         pipeData = readFrom.read().strip()
         schedulerList.append(pipeData)
         readFrom.close()
+
+try:
+    print("Trying to attach to shared memory and write list...")
+    sharedMemoryRefInInit = sysv_ipc.SharedMemory(key)
+    sharedMemoryRefInInit.write(",".join(schedulerList).encode('utf-8'))
+    sharedMemoryRefInInit.detach()
+except Exception as e:
+    print("Error attaching shared memory and writing: " + e)
         
 
 print("Scheduler list: ", schedulerList)
