@@ -90,7 +90,7 @@ try:
     sharedMemoryRefInInit = sysv_ipc.SharedMemory(key)
     sharedMemoryRefInInit.write(",".join(schedulerList).encode('utf-8'))
     sharedMemoryRefInInit.detach()
-    print("Shared memory written to!")
+    print("Shared memory write succesful!")
 except Exception as e:
     print("Error attaching shared memory and writing: " + str(e))
         
