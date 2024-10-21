@@ -40,8 +40,10 @@ if schedulerFork == 0:
             break
         time.sleep(0.1)
 
-    data = sharedMemory.read(1024).decode('utf-8').strip()
+    data = sharedMemory.read(1024).decode('utf-8').rstrip('\x00') # Strip null bytes and read
     dataList = data.split(",")
+    # Strip null bytes and whitespace.
+    # dataList = [x.strip() for x in dataList if x.strip() != ""]
     dataList.sort()
     print("\nSorted list from shared memory: ", dataList)
 
