@@ -33,6 +33,7 @@ if schedulerFork == 0:
 
     sharedMemory.detach()
     sysv_ipc.SharedMemory(key).remove()
+    os._exit(0)
 else:
     # Read from scheduler to know where to write
     os.close(schedulerPipeWrite)
@@ -43,7 +44,7 @@ else:
         exit(1)
     key = int(key_str)
     readFromScheduler.close()
-    
+
     print("Key: ", key)
 
 # Init
