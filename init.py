@@ -15,7 +15,7 @@ if schedulerFork == 0: # Why does execl not work? Why do we need to fork and do 
     key = 1234
 
     # Create a shared memory segment
-    sharedMemory = sysv_ipc.SharedMemory(key, sysv_ipc.IPC_CREAT | sysv_ipc.IPC_EXCL, 1024, 0o600)
+    sharedMemory = sysv_ipc.SharedMemory(key, sysv_ipc.IPC_CREAT | sysv_ipc.IPC_EXCL, 1024, 0o666)
 
     # Write to init pipe
     os.close(schedulerPipeRead)
@@ -44,7 +44,7 @@ for i in range(processes):
         os.close(pipeRead)
 
         writeTo = os.fdopen(pipeWrite, 'w')
-        writeTo.write(str(random.randint(1, 19)))
+        writeTo.write(str(random.randint(0, 19)))
         writeTo.close()
         os._exit(0)
 
