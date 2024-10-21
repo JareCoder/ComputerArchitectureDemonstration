@@ -34,8 +34,8 @@ if schedulerFork == 0:
     sharedMemory.attach()
     print("Waiting for shared memory to be written to...")
     while True: # Funny loop to check first byte of shared memory
-        flag = sharedMemory.read(1)
-        if flag and flag[0] == 1:
+        flag = sharedMemory.read(1).decode('utf-8')
+        if flag:
             print("Shared memory written to!")
             break
 
