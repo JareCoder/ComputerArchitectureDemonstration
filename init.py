@@ -23,14 +23,13 @@ if schedulerFork == 0:
     writeTo.write(str(key))
     writeTo.close()
 
-    # Wait until something is written into shared memory
     sharedMemory.attach()
     print("Waiting for shared memory to be written to...")
-    while True:
-        data = sharedMemory.read().decode('utf-8')
-        if data != "":
+    while True: # Funny loop to check first byte of shared memory
+        flag = sharedMemory.read(1)
+        if flag and flag[0] == 1:
             break
-        
+
     print("Shared memory written to!")
     data = sharedMemory.read().decode('utf-8')
     print("Data from shared memory: ", data)
