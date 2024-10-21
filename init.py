@@ -15,7 +15,15 @@ if schedulerFork == 0:
     key = 1234
 
     # Create a shared memory segment
-    sharedMemory = sysv_ipc.SharedMemory(key, sysv_ipc.IPC_CREAT | sysv_ipc.IPC_EXCL, 1024, 0o666)
+    try:
+        sharedMemory = sysv_ipc.SharedMemory(key, sysv_ipc.IPC_CREAT | sysv_ipc.IPC_EXCL, 1024, 0o666)
+    except sysv_ipc.ExistentialError:
+        print("Shared memory already exists. Removing and creating new one...")
+        sysv_ipc.SharedMemory(key).remove()
+        sharedMemory = sysv_ipc.SharedMemory(key, sysv_ipc.IPC_CREAT | sysv_ipc.IPC_EXCL, 1024, 0o666)
+    except Exception as e:
+        print("Error creating shared memory: " + str(e))
+        exit(1)
 
     # Write to init pipe
     os.close(schedulerPipeRead)
@@ -45,6 +53,7 @@ else:
     if key_str == "":
         print("Key is empty! Aborting...")
         exit(1)
+
     key = int(key_str)
     readFromScheduler.close()
 
@@ -76,11 +85,12 @@ for i in range(processes):
         schedulerList.append(pipeData)
         readFrom.close()
 
+print("Trying to attach to shared memory and write list...")
 try:
-    print("Trying to attach to shared memory and write list...")
     sharedMemoryRefInInit = sysv_ipc.SharedMemory(key)
     sharedMemoryRefInInit.write(",".join(schedulerList).encode('utf-8'))
     sharedMemoryRefInInit.detach()
+    print("Shared memory written to!")
 except Exception as e:
     print("Error attaching shared memory and writing: " + str(e))
         
