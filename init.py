@@ -42,8 +42,14 @@ if schedulerFork == 0:
 
     data = sharedMemory.read(1024).decode('utf-8').rstrip('\x00') # Strip null bytes and read
     dataList = data.split(",")
-    # Strip null bytes and whitespace.
-    # dataList = [x.strip() for x in dataList if x.strip() != ""]
+    
+    # Convert to int
+    try:
+        dataList = [int(i) for i in dataList]
+    except Exception as e:
+        print("Error converting data to int. Aborting: " + str(e))
+        exit(1)
+    
     dataList.sort()
     print("\nSorted list from shared memory: ", dataList)
 
