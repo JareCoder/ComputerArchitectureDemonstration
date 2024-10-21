@@ -1,5 +1,5 @@
 import os
-import sys
+import time
 import sysv_ipc
 import random
 
@@ -34,10 +34,11 @@ if schedulerFork == 0:
     sharedMemory.attach()
     print("Waiting for shared memory to be written to...")
     while True: # Funny loop to check first byte of shared memory
-        flag = sharedMemory.read(1).decode('utf-8')
-        if flag:
+        flag = sharedMemory.read(1)
+        if flag and flag[0] != 0:
             print("Shared memory written to!")
             break
+        time.sleep(0.1)
 
     data = sharedMemory.read(1024).decode('utf-8')
     print("Data from shared memory: ", data)
